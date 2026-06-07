@@ -4,6 +4,10 @@ import { useLocation } from 'react-router-dom';
 import { OrderCardProps } from './type';
 import { TIngredient } from '@utils-types';
 import { OrderCardUI } from '../ui/order-card';
+import { useSelector } from '../../services/store';
+import { selectAllingredients } from '../../services/ingredientsSlice';
+import { Preloader } from '@ui';
+import { selectOrderIsLoading } from '../../services/orderSlice';
 
 const maxIngredients = 6;
 
@@ -11,7 +15,8 @@ export const OrderCard: FC<OrderCardProps> = memo(({ order }) => {
   const location = useLocation();
 
   /** TODO: взять переменную из стора */
-  const ingredients: TIngredient[] = [];
+  const ingredients: TIngredient[] = useSelector(selectAllingredients);
+  const orderIsLoading = useSelector(selectOrderIsLoading);
 
   const orderInfo = useMemo(() => {
     if (!ingredients.length) return null;
@@ -45,13 +50,16 @@ export const OrderCard: FC<OrderCardProps> = memo(({ order }) => {
     };
   }, [order, ingredients]);
 
-  if (!orderInfo) return null;
-
-  return (
-    <OrderCardUI
-      orderInfo={orderInfo}
-      maxIngredients={maxIngredients}
-      locationState={{ background: location }}
-    />
-  );
+  if (!orderInfo && orderIsLoading) {
+    return <Preloader />;
+  }
+  if (orderInfo) {
+    return (
+      <OrderCardUI
+        orderInfo={orderInfo}
+        maxIngredients={maxIngredients}
+        locationState={{ background: location }}
+      />
+    );
+  }
 });
