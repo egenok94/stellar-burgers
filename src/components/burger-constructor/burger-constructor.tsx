@@ -10,8 +10,8 @@ import {
   closeConstructorOrderModal
 } from '../../services/constructorSlice';
 import { useDispatch } from 'react-redux';
-import { getCookie } from '../../utils/cookie';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { selectUserState } from '../../services/userSlice';
 
 export const BurgerConstructor: FC = () => {
   /** TODO: взять переменные constructorItems, orderRequest и orderModalData из стора */
@@ -22,19 +22,25 @@ export const BurgerConstructor: FC = () => {
   const orderRequest = useSelector(selectContructorIsLoading);
   const orderModalData = useSelector(selectOrderModalData);
 
+  const { user } = useSelector(selectUserState);
+
   const onOrderClick = () => {
-    if (!getCookie('accessToken')) {
+    if (!user) {
       navigate('/login');
     }
     if (
       constructorItems.bun &&
       constructorItems.ingredients.length > 0 &&
-      getCookie('accessToken')
+      user
     ) {
       dispatch(
-        getBurgerConstructorOrger(
-          constructorItems.ingredients.map((item) => item._id)
-        )
+        getBurgerConstructorOrger([
+          constructorItems.bun._id,
+          ...constructorItems.ingredients.map(
+            (item: TConstructorIngredient) => item._id
+          ),
+          constructorItems.bun._id
+        ])
       );
     }
 

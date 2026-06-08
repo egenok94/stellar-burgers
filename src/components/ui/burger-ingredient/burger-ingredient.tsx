@@ -1,5 +1,5 @@
 import React, { FC, memo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import styles from './burger-ingredient.module.css';
 
 import {
@@ -18,6 +18,7 @@ export const BurgerIngredientUI: FC<TBurgerIngredientUIProps> = memo(
     const dispatch: AppDispatch = useDispatch();
 
     const handleClick = () => {
+      console.log(ingredient);
       dispatch(openIngreient(ingredient));
     };
 

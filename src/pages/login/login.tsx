@@ -3,7 +3,7 @@ import { LoginUI } from '@ui-pages';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../services/store';
 import { loginUser, getUserError } from '../../services/userSlice';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { setCookie } from '../../utils/cookie';
 
 export const Login: FC = () => {
@@ -12,6 +12,8 @@ export const Login: FC = () => {
   const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
   const error = useSelector(getUserError);
+  const location = useLocation();
+  const from = location.state?.from || { pathname: '/' };
 
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
@@ -20,7 +22,6 @@ export const Login: FC = () => {
       .then((res) => {
         setCookie('accessToken', res.accessToken);
         localStorage.setItem('refreshToken', res.refreshToken);
-        navigate('/', { replace: true });
       })
       .catch((res) => console.log(res));
   };

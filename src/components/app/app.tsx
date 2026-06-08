@@ -15,12 +15,13 @@ import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 
 import { AppHeader, IngredientDetails, Modal, OrderInfo } from '@components';
 import { ProtectedRoute } from '../ProtectedRoute';
-import { AppDispatch } from 'src/services/store';
-import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../../services/store';
+import { useDispatch, useSelector } from 'react-redux';
 import { closeIngredient } from '../../services/constructorSlice';
 import { getIngredients } from '../../services/ingredientsSlice';
 import { useEffect } from 'react';
 import { closeChoosedOrder } from '../../services/orderSlice';
+import { getUser, selectUserState } from '../../services/userSlice';
 
 const App = () => {
   const location = useLocation();
@@ -28,14 +29,16 @@ const App = () => {
   const navigate = useNavigate();
 
   const background = location.state?.background;
+  const { isInit } = useSelector(selectUserState);
 
   useEffect(() => {
     dispatch(getIngredients());
-  }, []);
+    dispatch(getUser());
+  }, [dispatch, isInit]);
 
   return (
     <div className={styles.app}>
-      {location.pathname !== '/login' && <AppHeader />}
+      <AppHeader />
       <Routes location={background || location}>
         <Route path='/' element={<ConstructorPage />} />
         <Route path='/feed' element={<Feed />} />
@@ -51,14 +54,20 @@ const App = () => {
         <Route path='/reset-password' element={<ProtectedRoute onlyUnAuth />}>
           <Route path='/reset-password' element={<ResetPassword />} />
         </Route>
+        <Route path='/ingredients/:id' element={<IngredientDetails />} />
+        <Route path='/feed/:id' element={<OrderInfo />} />
         <Route path='/profile' element={<ProtectedRoute />}>
           <Route path='/profile' element={<Profile />} />
         </Route>
         <Route path='/profile/orders' element={<ProtectedRoute />}>
           <Route path='/profile/orders' element={<ProfileOrders />} />
         </Route>
+        <Route path='/profile/orders/:number' element={<ProtectedRoute />}>
+          <Route path='/profile/orders/:number' element={<OrderInfo />} />
+        </Route>
         <Route path='*' element={<NotFound404 />} />
       </Routes>
+
       {background && (
         <Routes>
           <Route
@@ -89,20 +98,22 @@ const App = () => {
               </Modal>
             }
           />
-          <Route
-            path='/profile/orders/:number'
-            element={
-              <Modal
-                title={`#${location.pathname.replace(/^[^/]*\/[^/]*\/[^/]*\//, '')}`}
-                onClose={() => {
-                  dispatch(closeChoosedOrder());
-                  navigate(-1);
-                }}
-              >
-                <OrderInfo />
-              </Modal>
-            }
-          />
+          <Route path='/profile/orders/:number' element={<ProtectedRoute />}>
+            <Route
+              path='/profile/orders/:number'
+              element={
+                <Modal
+                  title={`#${location.pathname.replace(/^[^/]*\/[^/]*\/[^/]*\//, '')}`}
+                  onClose={() => {
+                    dispatch(closeChoosedOrder());
+                    navigate(-1);
+                  }}
+                >
+                  <OrderInfo />
+                </Modal>
+              }
+            />
+          </Route>
         </Routes>
       )}
     </div>

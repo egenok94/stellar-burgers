@@ -1,8 +1,8 @@
-import { FC, useEffect } from 'react';
+import { FC } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ProfileMenuUI } from '@ui';
 import { AppDispatch, useDispatch } from '../../services/store';
-import { getUserOrders, logoutUser } from '../../services/userSlice';
+import { logoutUser } from '../../services/userSlice';
 
 export const ProfileMenu: FC = () => {
   const { pathname } = useLocation();

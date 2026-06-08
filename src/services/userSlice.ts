@@ -82,13 +82,9 @@ const initialState: UserState = {
 export const userSlice = createSlice({
   name: 'user',
   initialState,
-  reducers: {
-    init: (state) => {
-      state.isInit = true;
-    }
-  },
+  reducers: {},
   selectors: {
-    selectUser: (state) => state,
+    selectUserState: (state) => state,
     getUserError: (state) => state.error,
     selectUserOrders: (staate) => staate.orders
   },
@@ -134,6 +130,7 @@ export const userSlice = createSlice({
       state.isLoading = false;
       state.user = action.payload.user;
       state.isLogin = true;
+      state.isInit = true;
     });
     // Logout User
     builder.addCase(logoutUser.pending, (state) => {
@@ -147,6 +144,7 @@ export const userSlice = createSlice({
       state.isLoading = false;
       state.isLogin = false;
       state.user = null;
+      state.isInit = false;
     });
     //Update User
     builder.addCase(updateUser.pending, (state) => {
@@ -174,9 +172,7 @@ export const userSlice = createSlice({
   }
 });
 
-export const { init } = userSlice.actions;
-
-export const { selectUser, getUserError, selectUserOrders } =
+export const { selectUserState, getUserError, selectUserOrders } =
   userSlice.selectors;
 
 export default userSlice.reducer;

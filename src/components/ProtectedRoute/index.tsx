@@ -1,21 +1,27 @@
-import { Navigate, Outlet } from 'react-router-dom';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useSelector } from '../../services/store';
-import { RootState } from '../../services/store';
-import { getCookie } from '../../utils/cookie';
+import { selectUserState } from '../../services/userSlice';
+import { Preloader } from '@ui';
 
 type ProtectedRouteProps = {
   onlyUnAuth?: boolean;
 };
 
 export const ProtectedRoute = ({ onlyUnAuth = false }: ProtectedRouteProps) => {
-  const token = getCookie('accessToken');
+  const { user, isInit } = useSelector(selectUserState);
+  const location = useLocation();
 
-  if (onlyUnAuth && token) {
-    return <Navigate to='/' replace />;
+  if (!isInit) {
+    return <Preloader />;
   }
 
-  if (!onlyUnAuth && !token) {
-    return <Navigate to='/login' />;
+  if (onlyUnAuth && user) {
+    const from = location.state?.from || { pathname: '/' };
+    return <Navigate to={from} replace />;
+  }
+
+  if (!onlyUnAuth && !user) {
+    return <Navigate to='/login' state={{ from: location }} />;
   }
 
   return <Outlet />;

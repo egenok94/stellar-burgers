@@ -2,12 +2,8 @@ import { FC, SyntheticEvent, useState } from 'react';
 import { RegisterUI } from '@ui-pages';
 import { AppDispatch, useSelector } from '../../services/store';
 import { useDispatch } from 'react-redux';
-import {
-  getUserError,
-  registerUser,
-  selectUser
-} from '../../services/userSlice';
-import { useNavigate } from 'react-router-dom';
+import { getUserError, registerUser } from '../../services/userSlice';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { setCookie } from '../../utils/cookie';
 
 export const Register: FC = () => {
@@ -17,6 +13,8 @@ export const Register: FC = () => {
   const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
   const error = useSelector(getUserError);
+  const location = useLocation();
+  const from = location.state?.from || { pathname: '/' };
 
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
@@ -25,7 +23,7 @@ export const Register: FC = () => {
       .then((res) => {
         setCookie('accessToken', res.accessToken);
         localStorage.setItem('refreshToken', res.refreshToken);
-        navigate('/', { replace: true });
+        navigate(from.pathname, { replace: true });
       })
       .catch((res) => console.log(res.message));
   };
