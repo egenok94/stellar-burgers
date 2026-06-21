@@ -1,24 +1,54 @@
 import { FC, useMemo } from 'react';
 import { TConstructorIngredient } from '@utils-types';
 import { BurgerConstructorUI } from '@ui';
+import { AppDispatch, useSelector } from '../../services/store';
+import {
+  getBurgerConstructorOrger,
+  selectConstructorItems,
+  selectContructorIsLoading,
+  selectOrderModalData,
+  closeConstructorOrderModal
+} from '../../services/constructorSlice';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { selectUserState } from '../../services/userSlice';
 
 export const BurgerConstructor: FC = () => {
   /** TODO: взять переменные constructorItems, orderRequest и orderModalData из стора */
-  const constructorItems = {
-    bun: {
-      price: 0
-    },
-    ingredients: []
-  };
+  const dispatch: AppDispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const orderRequest = false;
+  const constructorItems = useSelector(selectConstructorItems);
+  const orderRequest = useSelector(selectContructorIsLoading);
+  const orderModalData = useSelector(selectOrderModalData);
 
-  const orderModalData = null;
+  const { user } = useSelector(selectUserState);
 
   const onOrderClick = () => {
+    if (!user) {
+      navigate('/login');
+    }
+    if (
+      constructorItems.bun &&
+      constructorItems.ingredients.length > 0 &&
+      user
+    ) {
+      dispatch(
+        getBurgerConstructorOrger([
+          constructorItems.bun._id,
+          ...constructorItems.ingredients.map(
+            (item: TConstructorIngredient) => item._id
+          ),
+          constructorItems.bun._id
+        ])
+      );
+    }
+
     if (!constructorItems.bun || orderRequest) return;
   };
-  const closeOrderModal = () => {};
+  const closeOrderModal = () => {
+    dispatch(closeConstructorOrderModal());
+  };
 
   const price = useMemo(
     () =>
@@ -29,8 +59,6 @@ export const BurgerConstructor: FC = () => {
       ),
     [constructorItems]
   );
-
-  return null;
 
   return (
     <BurgerConstructorUI

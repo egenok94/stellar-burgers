@@ -1,5 +1,5 @@
 import React, { FC, memo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import styles from './burger-ingredient.module.css';
 
 import {
@@ -9,10 +9,18 @@ import {
 } from '@zlden/react-developer-burger-ui-components';
 
 import { TBurgerIngredientUIProps } from './type';
+import { AppDispatch, useDispatch } from '../../../services/store';
+import { openIngreient } from '../../../services/constructorSlice';
 
 export const BurgerIngredientUI: FC<TBurgerIngredientUIProps> = memo(
   ({ ingredient, count, handleAdd, locationState }) => {
     const { image, price, name, _id } = ingredient;
+    const dispatch: AppDispatch = useDispatch();
+
+    const handleClick = () => {
+      console.log(ingredient);
+      dispatch(openIngreient(ingredient));
+    };
 
     return (
       <li className={styles.container}>
@@ -20,6 +28,7 @@ export const BurgerIngredientUI: FC<TBurgerIngredientUIProps> = memo(
           className={styles.article}
           to={`/ingredients/${_id}`}
           state={locationState}
+          onClick={handleClick}
         >
           {count && <Counter count={count} />}
           <img className={styles.img} src={image} alt='картинка ингредиента.' />
