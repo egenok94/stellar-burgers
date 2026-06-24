@@ -49,7 +49,7 @@ export const AppHeaderUI: FC<TAppHeaderUIProps> = ({ userName }) => (
           }
         >
           <ProfileIcon type={'primary'} />
-          <p className='text text_type_main-default ml-2'>
+          <p className='text text_type_main-default ml-2' data-id='profile'>
             {userName || 'Личный кабинет'}
           </p>
         </NavLink>
