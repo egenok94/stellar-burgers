@@ -2,124 +2,29 @@ import { test, expect } from '@playwright/test';
 /// <reference types="@playwright/test" />
 
 test.describe('constructor page tests', () => {
-  const mockdataOrder = {
-    success: true,
-    name: 'Люминесцентный·бессмертный·краторный·бургер',
-    order: {
-      ingredients: [
-        {
-          _id: '643d69a5c3f7b9001cfa093c',
-          name: 'Краторная булка N-200i',
-          type: 'bun',
-          proteins: 80,
-          fat: 24,
-          carbohydrates: 53,
-          calories: 420,
-          price: 1255,
-          image: 'https://code.s3.yandex.net/react/code/bun-02.png',
-          image_mobile:
-            'https://code.s3.yandex.net/react/code/bun-02-mobile.png',
-          image_large: 'https://code.s3.yandex.net/react/code/bun-02-large.png',
-          __v: 0
-        },
-        {
-          _id: '643d69a5c3f7b9001cfa093e',
-          name: 'Филе Люминесцентного тетраодонтимформа',
-          type: 'main',
-          proteins: 44,
-          fat: 26,
-          carbohydrates: 85,
-          calories: 643,
-          price: 988,
-          image: 'https://code.s3.yandex.net/react/code/meat-03.png',
-          image_mobile:
-            'https://code.s3.yandex.net/react/code/meat-03-mobile.png',
-          image_large:
-            'https://code.s3.yandex.net/react/code/meat-03-large.png',
-          __v: 0
-        },
-        {
-          _id: '643d69a5c3f7b9001cfa093f',
-          name: 'Мясо бессмертных моллюсков Protostomia',
-          type: 'main',
-          proteins: 433,
-          fat: 244,
-          carbohydrates: 33,
-          calories: 420,
-          price: 1337,
-          image: 'https://code.s3.yandex.net/react/code/meat-02.png',
-          image_mobile:
-            'https://code.s3.yandex.net/react/code/meat-02-mobile.png',
-          image_large:
-            'https://code.s3.yandex.net/react/code/meat-02-large.png',
-          __v: 0
-        },
-        {
-          _id: '643d69a5c3f7b9001cfa093c',
-          name: 'Краторная булка N-200i',
-          type: 'bun',
-          proteins: 80,
-          fat: 24,
-          carbohydrates: 53,
-          calories: 420,
-          price: 1255,
-          image: 'https://code.s3.yandex.net/react/code/bun-02.png',
-          image_mobile:
-            'https://code.s3.yandex.net/react/code/bun-02-mobile.png',
-          image_large: 'https://code.s3.yandex.net/react/code/bun-02-large.png',
-          __v: 0
-        }
-      ],
-      _id: '6a39aab16a172d001b98d951',
-      owner: {
-        name: 'keksik20new',
-        email: 'keksik20@mail.ru',
-        createdAt: '2026-06-03T17:20:35.262Z',
-        updatedAt: '2026-06-07T17:05:47.482Z'
-      },
-      status: 'done',
-      name: 'Люминесцентный·бессмертный·краторный·бургер',
-      createdAt: '2026-06-22T21:35:45.274Z',
-      updatedAt: '2026-06-22T21:35:45.350Z',
-      number: 106963,
-      price: 4835
-    }
-  };
 
   const mockAccessToken =
-    'Bearer%20eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMjA2MjYzNmExNzJkMDAxYjk4YmEzYyIsImlhdCI6MTc4MjE2MzQ0NCwiZXhwIjoxNzgyMTY0NjQ0fQ.gCdYuxumBtpnCtq_EL2HSVqQI1hvnyX6PfYKIua5-ys';
+    'Bearer%20eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMjA2MjYzNmExNzJkMDAxYjk4YmEzYyIsImlhdCI6MTc4MjQxNDQ4MiwiZXhwIjoxNzgyNDE1NjgyfQ.32yp62-pL1b3DuMwAnukt-Sob7tesau6uIPxopxf9oY';
   const mockRefreshToken =
-    '114fec3e11e356244b1ee1a79bc3199a10e534da9f3023e0d5a67a52ed4d15fbe5b912b1c5239d7e';
+    '42ff66b5c58414ff02000fc0a4d6af76f3527e86b39cdf11337d46d73489c7712ac48d18fa2cc03d';
 
-  test('перехват api/ingredients to mock data', async ({ page }) => {
-    await page.route(
-      'https://norma.education-services.ru/api/ingredients',
-      (route) => route.abort()
-    );
-    await page.routeFromHAR('./e2e/hars/igredients.har', {
+  test.beforeEach(async ({ page }) => {
+    await page.routeFromHAR('./tests/hars/igredients.har', {
       url: '**/api/ingredients',
       update: false // Режим записи
     });
+  });
 
+  test('перехват api/ingredients to mock data', async ({ page }) => {
     await page.goto('/');
 
     // Ждём загрузки данных
     await expect(page.getByTestId('ingr-tabs')).toBeVisible();
     await expect(page.getByText('Краторная булка N-200i')).toBeVisible();
     await expect(page.getByText('Соус фирменный Space Sauce')).toBeVisible();
-
-    // HAR-файл будет сохранён автоматически
   });
 
   test('adding bun and some ingredients to constructor', async ({ page }) => {
-    await page.route(
-      'https://norma.education-services.ru/api/ingredients',
-      (route) => route.abort()
-    );
-    await page.routeFromHAR('./e2e/hars/igredients.har', {
-      url: '**/api/ingredients',
-      update: false // Режим записи
-    });
     await page.goto('/');
     const constructor = page.locator('[data-id="burger-constructor"]');
     const bunText = constructor.getByText('Краторная булка N-200i (низ)');
@@ -151,14 +56,6 @@ test.describe('constructor page tests', () => {
 
   test.describe('modal test', () => {
     test('opening modal with ingredient', async ({ page }) => {
-      await page.route(
-        'https://norma.education-services.ru/api/ingredients',
-        (route) => route.abort()
-      );
-      await page.routeFromHAR('./e2e/hars/igredients.har', {
-        url: '**/api/ingredients',
-        update: false // Режим записи
-      });
       await page.goto('/');
       await page
         .getByRole('link', { name: 'картинка ингредиента. 1255' })
@@ -173,14 +70,6 @@ test.describe('constructor page tests', () => {
     });
 
     test('close modal with close button', async ({ page }) => {
-      await page.route(
-        'https://norma.education-services.ru/api/ingredients',
-        (route) => route.abort()
-      );
-      await page.routeFromHAR('./e2e/hars/igredients.har', {
-        url: '**/api/ingredients',
-        update: false // Режим записи
-      });
       await page.goto('/');
       await page
         .getByRole('link', { name: 'картинка ингредиента. 1255' })
@@ -200,14 +89,6 @@ test.describe('constructor page tests', () => {
     });
 
     test('close modal with click away', async ({ page }) => {
-      await page.route(
-        'https://norma.education-services.ru/api/ingredients',
-        (route) => route.abort()
-      );
-      await page.routeFromHAR('./e2e/hars/igredients.har', {
-        url: '**/api/ingredients',
-        update: false // Режим записи
-      });
       await page.goto('/');
       await page
         .getByRole('link', { name: 'картинка ингредиента. 1255' })
@@ -226,37 +107,6 @@ test.describe('constructor page tests', () => {
   });
 
   test('create order', async ({ page, context }) => {
-    // mocking get user
-    await page.route('**/api/auth/user', (route) => {
-      route.fulfill({
-        status: 200,
-        body: JSON.stringify({
-          success: true,
-          user: { email: 'keksik20@mail.ru', name: 'keksik20new' }
-        })
-      });
-    });
-
-    // mocking get ingredient
-    await page.route(
-      'https://norma.education-services.ru/api/ingredients',
-      (route) => route.abort()
-    );
-    await page.routeFromHAR('./e2e/hars/igredients.har', {
-      url: '**/api/ingredients',
-      update: false // Режим записи
-    });
-
-    // mocking create order
-    await page.route('**/api/orders', (route) => {
-      if (route.request().method() === 'POST') {
-        route.fulfill({
-          status: 200,
-          body: JSON.stringify(mockdataOrder)
-        });
-      }
-    });
-
     // accessToken в Cookies
     await context.addCookies([
       {
@@ -268,9 +118,19 @@ test.describe('constructor page tests', () => {
     ]);
 
     // refreshToken в localStorage
-    await page.addInitScript(`
-    localStorage.setItem('refreshToken', '${mockRefreshToken}');
-  `);
+    await page.addInitScript(
+      (token) => localStorage.setItem('refreshToken', token),
+      mockRefreshToken
+    );
+
+    await page.routeFromHAR('./tests/hars/auth-user.har', {
+      url: '**/api/auth/user',
+      update: false
+    });
+    await page.routeFromHAR('./tests/hars/orders.har', {
+      url: '**/api/orders',
+      update: false
+    });
 
     await page.goto('/');
 
@@ -326,7 +186,7 @@ test.describe('constructor page tests', () => {
     await createOrderButton.click();
 
     const modal = page.locator('[data-id="modal"]');
-    const numberOfOrder = modal.getByText('106963');
+    const numberOfOrder = modal.getByText('107211');
 
     await expect(modal).toBeVisible();
     await expect(numberOfOrder).toBeVisible();

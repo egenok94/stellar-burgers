@@ -437,7 +437,6 @@ describe('burgerConstructor slice test', () => {
       }
     };
     const state = reducer(prevState, action);
-    console.log(state);
 
     expect(state.choosedIngredient).toBe(null);
     expect(state.isLoading).toBe(false);
@@ -449,7 +448,6 @@ describe('burgerConstructor slice test', () => {
       ingredients: []
     });
 
-    console.log(state.orderModalData);
     expect(state.error).toBe(null);
   });
 
